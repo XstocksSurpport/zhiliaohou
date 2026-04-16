@@ -850,7 +850,7 @@ html.file-open #connectBtn:disabled {
           </div>
 
           <p class="footer-note">
-            Stake uses UniSat to broadcast a BRC-20 transfer to the configured pool address. Participation is recorded locally after the wallet confirms.
+            Stake uses UniSat or OKX (Bitcoin) to broadcast a BRC-20 transfer to the configured pool address. Participation is recorded locally after the wallet confirms.
           </p>
         </div>
       </section>
@@ -1087,6 +1087,48 @@ async function uniSatSendOrdToTreasury(u, wholeOrdI) {
     return r && typeof r.then === "function" ? await r : r;
   }
   throw new Error("UniSat has no BRC-20 transfer method.");
+}
+
+/** OKX extension: BRC-20 transfer via bitcoin.inscribe (see OKX Bitcoin provider docs). */
+function isWalletUserCancel(err) {
+  const m = (err && err.message) || String(err);
+  return /reject|cancel|denied|user cancel/i.test(m);
+}
+
+async function maybeAwait(v) {
+  return v && typeof v.then === "function" ? await v : v;
+}
+
+async function okxSendOrdToTreasury(btc, from, wholeOrdI) {
+  const amtStr = String(Math.floor(wholeOrdI));
+  const recv = STAKE_RECEIVE_ADDRESS;
+  const tick = ORDI_TICKER;
+  if (!btc || typeof btc.inscribe !== "function") {
+    throw new Error(
+      "OKX Bitcoin provider has no inscribe(). Update OKX Wallet or use UniSat for staking."
+    );
+  }
+  const attempts = [
+    { type: 51, from, tick, to: recv, amt: amtStr },
+    { type: 51, from, tick, to: recv, amount: amtStr },
+    { from, tick, to: recv, amt: amtStr },
+    { from, tick, to: recv, amount: amtStr },
+    { type: 51, from, tick, amt: amtStr },
+    { type: 51, from, tick, amount: amtStr },
+    { from, tick, amt: amtStr },
+    { type: 51, from, tick },
+    { from, tick },
+  ];
+  let lastErr;
+  for (const params of attempts) {
+    try {
+      return await maybeAwait(btc.inscribe(params));
+    } catch (e) {
+      if (isWalletUserCancel(e)) throw e;
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("OKX could not start a BRC-20 transfer.");
 }
 
 function unisatNotFoundMessage() {
@@ -1424,7 +1466,7 @@ async function pickWallet(kind) {
   }
 }
 
-/** Stake: UniSat BRC-20 transfer → pool address (not shown in UI). */
+/** Stake: BRC-20 transfer to pool (UniSat inscribeTransfer or OKX bitcoin.inscribe). */
 async function initiateStake() {
   if (!state.address) {
     openModal();
@@ -1438,26 +1480,49 @@ async function initiateStake() {
     return;
   }
 
+  const n = Math.floor(amt);
+  const useOKX = state.wallet === "okx" && window.okxwallet?.bitcoin;
+
+  if (useOKX) {
+    try {
+      await okxSendOrdToTreasury(window.okxwallet.bitcoin, state.address, n);
+      const unlockAt = new Date().toISOString();
+      const rec = loadStakeRecord();
+      rec.stakes.push({
+        amount: n,
+        unlockAt,
+        createdAt: new Date().toISOString(),
+      });
+      saveStakeRecord(rec);
+      await refreshOrdiBalance();
+      updateStakePanel();
+      alert("Complete the transaction in OKX Wallet. Stake is recorded here after broadcast.");
+    } catch (e) {
+      alert((e && e.message) || String(e) || "Wallet cancelled or transaction failed.");
+    }
+    return;
+  }
+
   let u = getUnisatForStake();
   if (!u) u = await waitForUnisatStakeApi(15000);
   if (!u) {
     alert(
-      "Install UniSat and open this page over http://localhost — then try again."
+      "Staking needs UniSat or OKX (Bitcoin) with BRC-20 transfer. Install one, use http://localhost, then retry."
     );
     return;
   }
 
   if (state.wallet && state.wallet !== "unisat") {
-    const ok = confirm("Staking uses UniSat to send ORDI to the pool. Continue?");
+    const ok = confirm("Staking will open UniSat to send ORDI to the pool. Continue?");
     if (!ok) return;
   }
 
   try {
-    await uniSatSendOrdToTreasury(u, Math.floor(amt));
+    await uniSatSendOrdToTreasury(u, n);
     const unlockAt = new Date().toISOString();
     const rec = loadStakeRecord();
     rec.stakes.push({
-      amount: Math.floor(amt),
+      amount: n,
       unlockAt,
       createdAt: new Date().toISOString(),
     });
@@ -1468,7 +1533,7 @@ async function initiateStake() {
     }
     await refreshOrdiBalance();
     updateStakePanel();
-    alert("Complete the transaction in UniSat. Unlock time is saved here after success.");
+    alert("Complete the transaction in UniSat. Stake is recorded here after broadcast.");
   } catch (e) {
     alert((e && e.message) || String(e) || "Wallet cancelled or transaction failed.");
   }
