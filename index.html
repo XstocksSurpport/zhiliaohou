@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORDI · BRC-20 Staking</title>
+    <style>
+:root {
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --muted: #5c5c5c;
+  --accent: #f7931a;
+  --accent-hover: #e88510;
+  --pill-bg: #1a1a1a;
+  --peach: #fff4eb;
+  --radius-pill: 999px;
+  --radius-lg: 28px;
+  --shadow: 0 24px 80px rgba(15, 15, 15, 0.08);
+  --font: "Segoe UI", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f7931a, #ffb347);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.nav-pill {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: var(--pill-bg);
+  color: #fff;
+  padding: 6px 8px 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+}
+
+.nav-pill a {
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  opacity: 0.85;
+  transition: background 0.2s, opacity 0.2s;
+  white-space: nowrap;
+}
+
+.nav-pill a:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.btn-accent:hover {
+  background: var(--accent-hover);
+}
+
+.btn-accent:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #fafafa;
+}
+
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .nav-pill {
+    display: flex;
+  }
+
+  .hero {
+    grid-template-columns: 1fr 1fr;
+    padding-top: 64px;
+  }
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0 0 20px;
+}
+
+.hero-title .line {
+  display: block;
+}
+
+.hero-lead {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 34ch;
+  margin-bottom: 28px;
+}
+
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.store-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.store-badge {
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  border: 1px solid #0a0a0a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #fff;
+}
+
+.hero-visual {
+  position: relative;
+  background: var(--peach);
+  border-radius: 36px;
+  min-height: 380px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.phone-mock {
+  position: relative;
+  z-index: 2;
+  width: min(280px, 85%);
+  margin: 0 auto;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.18));
+}
+
+.phone-frame {
+  background: #111;
+  border-radius: 36px;
+  padding: 12px;
+  border: 3px solid #2a2a2a;
+}
+
+.phone-screen {
+  background: linear-gradient(180deg, #fafafa, #ececec);
+  border-radius: 26px;
+  padding: 18px;
+  min-height: 320px;
+}
+
+.phone-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.phone-balance {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 4px 0 16px;
+}
+
+.phone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.85rem;
+}
+
+.phone-row strong {
+  font-weight: 700;
+}
+
+.coin-float {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.65rem;
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.coin-float.btc {
+  background: #f7931a;
+  top: 12%;
+  left: 8%;
+}
+.coin-float.eth {
+  background: #627eea;
+  top: 22%;
+  right: 6%;
+}
+.coin-float.ordi {
+  background: #000;
+  bottom: 18%;
+  left: 4%;
+  font-size: 0.55rem;
+}
+
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 72px 24px;
+}
+
+.section-alt {
+  background: #fafafa;
+}
+
+.section h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+
+.section h3 {
+  font-size: 1.2rem;
+  margin: 32px 0 12px;
+}
+
+.section p {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.inscription-pill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  word-break: break-all;
+  color: #333;
+}
+
+.stake-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  max-width: 520px;
+}
+
+.stake-stats {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 520px) {
+  .stake-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.stat-box {
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+
+.stat-box .label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stat-box .value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.field input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.field input:focus {
+  outline: 2px solid rgba(247, 147, 26, 0.35);
+  border-color: var(--accent);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.footer-note {
+  font-size: 0.78rem;
+  color: #888;
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 24px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.25);
+}
+
+.modal h3 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.modal p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.wallet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wallet-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: #fff;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.wallet-option:hover {
+  border-color: var(--accent);
+  background: #fffaf5;
+}
+
+.wallet-option span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.mobile-nav-toggle {
+  display: flex;
+  background: var(--pill-bg);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (min-width: 960px) {
+  .mobile-nav-toggle {
+    display: none;
+  }
+}
+
+.mobile-drawer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.mobile-drawer.open {
+  display: block;
+}
+
+.mobile-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(320px, 88vw);
+  height: 100%;
+  background: #fff;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+}
+
+.mobile-drawer-panel a {
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.mobile-drawer-panel a:hover {
+  background: #f5f5f5;
+}
+
+.address-chip {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  background: #f0f0f0;
+  border-radius: var(--radius-pill);
+}
+
+.contact-link-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  max-width: 640px;
+}
+
+.contact-link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  background: #fffaf5;
+}
+
+.contact-link-title {
+  font-weight: 600;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-link-title::after {
+  content: '↗';
+  font-size: 0.85em;
+  opacity: 0.55;
+}
+
+.contact-link-desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.site-footer-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+}
+
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.site-footer-links a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.site-footer-links a:hover {
+  color: var(--accent-hover);
+}
+
+/* file:// — browser blocks extension injection; wallets need http(s) */
+.file-proto-bar {
+  display: none;
+  margin: 0;
+  padding: 10px 16px;
+  background: #111;
+  color: #e8e8e8;
+  font-size: 0.8125rem;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+
+html.file-open .file-proto-bar {
+  display: block;
+}
+
+.file-proto-bar a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+html.file-open #connectBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+    </style>
+  </head>
+  <body>
+    <script>
+      if (location.protocol === "file:") document.documentElement.classList.add("file-open");
+    </script>
+    <p class="file-proto-bar">
+      Wallets (UniSat, etc.) do not work on <code>file://</code> — open
+      <a href="http://localhost:3002/">http://localhost:3002/</a> after running <code>open-localhost3002.cmd</code> in this folder.
+    </p>
+    <p id="bootHint" style="display: none; margin: 0; padding: 12px 20px; background: #fde8e8; border-bottom: 1px solid #f0c4c4; font-size: 0.9rem; color: #6b1c1c" role="alert"></p>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#top" id="top">
+          <span class="brand-mark">₿</span>
+          <span>ORDI Stake</span>
+        </a>
+
+        <nav class="nav-pill" aria-label="Primary">
+          <a href="#about">What is BRC-20</a>
+          <a href="#stake">Stake</a>
+          <a href="#vision">Vision</a>
+          <a href="#community">Community</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="btn btn-accent" type="button" id="connectBtn">Connect</button>
+          <span class="address-chip" id="addressChip" style="display: none"></span>
+          <button class="icon-btn" type="button" aria-label="Search (placeholder)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-4-4" />
+            </svg>
+          </button>
+          <button class="mobile-nav-toggle" type="button" id="mobileNavOpen">Menu</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="mobile-drawer" id="mobileDrawer">
+      <div class="mobile-drawer-panel">
+        <button class="btn btn-ghost" type="button" id="mobileNavClose" style="align-self: flex-end">Close</button>
+        <a href="#about">What is BRC-20</a>
+        <a href="#stake">Stake</a>
+        <a href="#vision">Vision</a>
+        <a href="#community">Community</a>
+      </div>
+    </div>
+
+    <main>
+      <section class="hero" aria-label="Hero">
+        <div>
+          <h1 class="hero-title">
+            <span class="line">Unlock your ORDI</span>
+            <span class="line">and engage with confidence</span>
+          </h1>
+          <p class="hero-lead">
+            Built on Bitcoin and the Ordinals BRC-20 standard. Connect popular wallets and stake in one step, with clear balances.
+          </p>
+          <div class="hero-cta-row">
+            <button class="btn btn-accent" type="button" id="heroStakeBtn">
+              Start staking
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div class="store-badges">
+            <span class="store-badge">BRC-20 · ORDI</span>
+            <span class="store-badge">Taproot-ready</span>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="coin-float btc">₿</div>
+          <div class="coin-float eth">Ξ</div>
+          <div class="coin-float ordi">ORDI</div>
+          <div class="phone-mock">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <div class="phone-label">Overview</div>
+                <div class="phone-balance" id="heroMiniBal">— ORDI</div>
+                <div class="phone-row"><span>Available</span><strong>Indexer</strong></div>
+                <div class="phone-row"><span>Staked</span><strong>Withdraw anytime</strong></div>
+                <div class="phone-row"><span>Network</span><strong>Bitcoin</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <h2>What is BRC-20</h2>
+        <p>
+          BRC-20 tokens are a recent innovation in the Bitcoin ecosystem. They expand what people expect from Bitcoin and open new design space. Below is a concise overview of the idea, trade-offs, and potential impact.
+        </p>
+
+        <h3>What is a BRC-20 token?</h3>
+        <p>
+          BRC-20 is an experimental fungible-token standard for Bitcoin. Fungible tokens are interchangeable: each unit has the same role and economic meaning.
+        </p>
+        <p>
+          Standards like BRC-20 bring tokenization to Bitcoin, extending the network beyond a pure decentralized digital currency. You can think of BRC-20 as an experimental way to issue “altcoin-like” assets anchored in Bitcoin’s chain.
+        </p>
+
+        <h3>Taproot and Ordinals</h3>
+        <p>
+          The Taproot upgrade increased how much arbitrary data can live in blocks, which was essential for Ordinals and laid groundwork for BRC-20.
+        </p>
+        <p>
+          Engineer Casey Rodarmor introduced the Ordinals protocol in January 2023, using ordinal theory to inscribe data onto individual satoshis—the smallest units of bitcoin.
+        </p>
+        <p>With Ordinals numbering and inscription mechanics, both fungible tokens and NFT-like assets can be expressed on Bitcoin.</p>
+
+        <h3>How BRC-20 works</h3>
+        <p>
+          Anonymous analyst Domo launched BRC-20 in March 2023. It uses Ordinals inscriptions to mint and move fungible tokens on Bitcoin.
+        </p>
+        <p>
+          Unlike Ethereum’s ERC-20, BRC-20 does not rely on smart contracts; behavior is encoded via Ordinals inscriptions. ERC-20 assets are created by contracts, while BRC-20 deploys JSON inscriptions onto sats.
+        </p>
+        <p>
+          The standard is highly experimental but simple: you can tokenize assets on Bitcoin without deploying complex contract code.
+        </p>
+
+        <p><strong>ORDI deploy inscription (reference)</strong></p>
+        <span class="inscription-pill" id="deployInscription"></span>
+      </section>
+
+      <section class="section section-alt" id="stake">
+        <h2>Stake</h2>
+        <p>
+          Connect UniSat, enter an amount, then confirm in the wallet. ORDI is sent to the pool via UniSat’s BRC-20 transfer flow (minimum 1 ORDI).
+        </p>
+
+        <div class="stake-card" style="margin-top: 28px">
+          <div class="stake-stats">
+            <div class="stat-box">
+              <div class="label">Wallet ORDI (indexer)</div>
+              <div class="value" id="ordiWalletBalance">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="label">Staked (this site)</div>
+              <div class="value" id="ordiStaked">0</div>
+            </div>
+            <div class="stat-box" style="grid-column: 1 / -1">
+              <div class="label">Staking period</div>
+              <div class="value" style="font-size: 1.1rem">Withdraw anytime</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="stakeAmount">Amount (ORDI)</label>
+            <input id="stakeAmount" type="number" min="1" step="1" placeholder="Minimum 1" />
+            <p class="hint" id="balanceSource"></p>
+            <details class="hint" style="margin-top: 12px">
+              <summary>Indexer failing? Enter total ORDI manually (display only, local)</summary>
+              <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap">
+                <input id="manualOrdi" type="number" min="0" step="1" placeholder="e.g. 100" style="flex: 1; min-width: 140px" />
+                <button class="btn btn-ghost" type="button" id="applyManualOrdi">Apply</button>
+                <button class="btn btn-ghost" type="button" id="clearManualOrdi">Clear</button>
+              </div>
+            </details>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <button class="btn btn-accent" type="button" id="stakeSubmit">Stake (open wallet)</button>
+            <button class="btn btn-ghost" type="button" id="refreshBalance">Refresh balance</button>
+          </div>
+
+          <p class="footer-note">
+            Stake uses UniSat to broadcast a BRC-20 transfer to the configured pool address. Participation is recorded locally after the wallet confirms.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="vision">
+        <h2>The future of BRC-20</h2>
+        <p>
+          Bitcoin is evolving from a single-asset ledger toward a settlement layer that can carry state and portable assets. The Ordinals / inscription model compresses issuance and transfer logic into on-chain data, giving developers a path to express assets without a global contract state machine.
+        </p>
+        <h3>Indexers and standards</h3>
+        <p>
+          Near term, interoperability between indexers, replay consistency, and reorg safety remain core topics. Mid term, liquidity protocols around BRC-20, cross-wallet signing (PSBT ergonomics), and better batch transfers should lower friction. Longer term, coupling with L2s, payment channels, or native programmability could position BRC-20-like assets in a “mainnet settlement + L2 execution” architecture.
+        </p>
+        <h3>Compliance and UX</h3>
+        <p>
+          As wallets and venues improve Ordinals support, BRC-20 will lean more on transparent disclosure, risk warnings, and on-chain auditability. Experimental standards mean users should understand inscription costs, liquidity risk, and protocol change risk—balancing open innovation with responsible communication.
+        </p>
+      </section>
+
+      <section class="section section-alt" id="community">
+        <h2>Community</h2>
+        <p>
+          Bitcoin and Ordinals communities live across forums, chats, and open-source repos. Below are well-known entry points (external links; not affiliated with this demo). Click a card to open:
+        </p>
+        <div class="contact-link-grid">
+          <a
+            class="contact-link"
+            href="https://bitcoin.org/en/community"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="contact-link-title">Bitcoin.org community</span>
+            <span class="contact-link-desc">Mailing lists, forums, and research resources</span>
+          </a>
+          <a class="contact-link" href="https://bitcointalk.org" target="_blank" rel="noopener noreferrer">
+            <span class="contact-link-title">Bitcointalk</span>
+            <span class="contact-link-desc">Long-running Bitcoin forum; great for historical technical threads</span>
+          </a>
+          <a
+            class="contact-link"
+            href="https://bitcoin.stackexchange.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="contact-link-title">Bitcoin Stack Exchange</span>
+            <span class="contact-link-desc">Q&amp;A for protocol and node topics</span>
+          </a>
+          <a class="contact-link" href="https://unisat.io" target="_blank" rel="noopener noreferrer">
+            <span class="contact-link-title">UniSat</span>
+            <span class="contact-link-desc">Wallet and tooling; Ordinals / BRC-20 updates</span>
+          </a>
+          <a class="contact-link" href="https://www.xverse.app" target="_blank" rel="noopener noreferrer">
+            <span class="contact-link-title">Xverse</span>
+            <span class="contact-link-desc">Bitcoin and Ordinals wallet — site and docs</span>
+          </a>
+        </div>
+        <p>
+          For feedback or partnerships, use your usual public channels (this is a static demo with no backend inbox).
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer-bar" aria-label="Footer">
+      <nav class="site-footer-links" aria-label="External community links">
+        <a href="https://bitcoin.org/en/community" target="_blank" rel="noopener noreferrer">Bitcoin.org</a>
+        <a href="https://bitcointalk.org" target="_blank" rel="noopener noreferrer">Bitcointalk</a>
+        <a href="https://bitcoin.stackexchange.com" target="_blank" rel="noopener noreferrer">Stack Exchange</a>
+        <a href="https://unisat.io" target="_blank" rel="noopener noreferrer">UniSat</a>
+        <a href="https://www.xverse.app" target="_blank" rel="noopener noreferrer">Xverse</a>
+        <a href="#community">Community (on-page)</a>
+      </nav>
+      <p style="font-size: 0.85rem; color: #888; margin: 0">
+        © ORDI Stake demo · static front-end only · be careful with real funds on mainnet
+      </p>
+    </footer>
+
+    <div class="modal-backdrop" id="walletModal" role="dialog" aria-modal="true" aria-labelledby="walletModalTitle">
+      <div class="modal">
+        <h3 id="walletModalTitle">Connect wallet</h3>
+        <p>Pick a wallet to connect and load your address.</p>
+        <div class="wallet-list">
+          <button class="wallet-option" type="button" data-wallet="unisat">
+            UniSat Wallet <span>Full ecosystem · recommended for staking</span>
+          </button>
+          <button class="wallet-option" type="button" data-wallet="okx">
+            OKX Wallet <span>Multi-chain Web3</span>
+          </button>
+          <button class="wallet-option" type="button" data-wallet="xverse">
+            Xverse <span>Bitcoin &amp; Ordinals</span>
+          </button>
+          <button class="wallet-option" type="button" data-wallet="fox">
+            FoxWallet <span>Browser injection</span>
+          </button>
+        </div>
+        <button class="btn btn-ghost" type="button" id="modalClose" style="width: 100%; margin-top: 16px">Cancel</button>
+      </div>
+    </div>
+
+    <script>
+/**
+ * ORDI BRC-20 staking demo — wallet and data logic
+ * Requires: browser; UniSat injects window.unisat; Hiro Ordinals API for balance (when available)
+ */
+
+const ORDI_TICKER = "ordi";
+/** Pool Taproot address — used only in wallet RPC, not shown in UI */
+const STAKE_RECEIVE_ADDRESS =
+  "bc1pma5zw9m0w5c8v9rhqucm9q65knzh4pk6xa7mwz5ks2jcnwrp8t4suepgqk";
+const STORAGE_PREFIX = "ordiStake:v1:";
+const DEPLOY_INSCRIPTION =
+  "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0";
+
+const state = {
+  wallet: null,
+  address: null,
+  ordiBalance: null,
+  balanceSource: "",
+  loadingBalance: false,
+  unisatListener: false,
+  /** Manual display balance when indexers fail (local only) */
+  manualOrdi: null,
+};
+
+/** Same globals as UniSat docs; unisat_wallet is the fallback name in some builds. */
+function getUnisatRaw() {
+  return window.unisat || window.unisat_wallet;
+}
+
+/** Ready to connect: official demo uses getAccounts / requestAccounts, not only the latter. */
+function isUnisatReady(u) {
+  if (!u || typeof u !== "object") return false;
+  return (
+    typeof u.requestAccounts === "function" || typeof u.getAccounts === "function"
+  );
+}
+
+function getUnisatProvider() {
+  const u = getUnisatRaw();
+  return isUnisatReady(u) ? u : null;
+}
+
+/**
+ * Match unisat-web3-demo: staggered delays 100+200+… then keep polling.
+ * https://github.com/unisat-wallet/unisat-web3-demo/blob/master/src/App.tsx
+ */
+async function waitForUnisatProvider(timeoutMs = 20000) {
+  const deadline = Date.now() + timeoutMs;
+  for (let i = 1; i < 10; i++) {
+    const u = getUnisatRaw();
+    if (isUnisatReady(u)) return u;
+    await new Promise((r) => setTimeout(r, 100 * i));
+  }
+  while (Date.now() < deadline) {
+    const u = getUnisatRaw();
+    if (isUnisatReady(u)) return u;
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  const u = getUnisatRaw();
+  return isUnisatReady(u) ? u : null;
+}
+
+function normalizeUnisatAccounts(result) {
+  if (result == null) return [];
+  if (Array.isArray(result)) return result;
+  if (typeof result === "string") return [result];
+  if (typeof result === "object" && result.address) return [result.address];
+  return [];
+}
+
+/** Public dapp API usually exposes inscribeTransfer only; inscribeBRC20Transfer is often internal. */
+function getUnisatForStake() {
+  const u = getUnisatRaw();
+  if (!u) return null;
+  const hasBrc =
+    typeof u.inscribeBRC20Transfer === "function" || typeof u.inscribeBrc20Transfer === "function";
+  if (hasBrc || typeof u.inscribeTransfer === "function") return u;
+  return null;
+}
+
+async function waitForUnisatStakeApi(timeoutMs = 15000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < timeoutMs) {
+    const u = getUnisatForStake();
+    if (u) return u;
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  return getUnisatForStake();
+}
+
+async function getUniSatFeeRate(u) {
+  const fb = 15;
+  try {
+    if (typeof u.getFeeSummary !== "function") return fb;
+    const s = await u.getFeeSummary();
+    if (!s || typeof s !== "object") return fb;
+    const v =
+      s.fastestFee ??
+      s.fastFee ??
+      s.halfHourFee ??
+      (Array.isArray(s.list) && s.list[0] && (s.list[0].feeRate ?? s.list[0].number));
+    if (typeof v === "number" && v > 0) return Math.min(500, Math.max(1, Math.round(v)));
+  } catch (e) {
+    console.warn(e);
+  }
+  return fb;
+}
+
+/**
+ * Pool send: prefer inscribeTransfer (public dapp API). inscribeBRC20Transfer is often internal — calling it first can show “Update UniSat…” instead of a tx.
+ */
+async function uniSatSendOrdToTreasury(u, wholeOrdI) {
+  const amtStr = String(Math.floor(wholeOrdI));
+  const recv = STAKE_RECEIVE_ADDRESS;
+  const ins = u.inscribeTransfer;
+  if (typeof ins === "function") {
+    try {
+      return await ins.call(u, ORDI_TICKER, amtStr, recv);
+    } catch (e) {
+      const m = (e && e.message) || String(e);
+      if (/reject|cancel|denied|user cancel/i.test(m)) throw e;
+      try {
+        return await ins.call(u, ORDI_TICKER, amtStr, { to: recv });
+      } catch (e2) {
+        const m2 = (e2 && e2.message) || String(e2);
+        if (/reject|cancel|denied|user cancel/i.test(m2)) throw e2;
+        return await ins.call(u, ORDI_TICKER, amtStr);
+      }
+    }
+  }
+  const brc = u.inscribeBRC20Transfer || u.inscribeBrc20Transfer;
+  if (typeof brc === "function") {
+    const fee = await getUniSatFeeRate(u);
+    const r = brc.call(u, recv, ORDI_TICKER, amtStr, fee, 546);
+    return r && typeof r.then === "function" ? await r : r;
+  }
+  throw new Error("UniSat has no BRC-20 transfer method.");
+}
+
+function unisatNotFoundMessage() {
+  if (location.protocol === "file:") {
+    return "Open http://localhost:3002/ (add ?local=1 to this file’s URL to stay offline).";
+  }
+  return "UniSat not found. https://unisat.io";
+}
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+function storageKey() {
+  if (!state.address) return null;
+  return STORAGE_PREFIX + (state.wallet || "unknown") + ":" + state.address;
+}
+
+function loadStakeRecord() {
+  const k = storageKey();
+  if (!k) return { stakes: [] };
+  try {
+    const raw = localStorage.getItem(k);
+    if (!raw) return { stakes: [] };
+    const data = JSON.parse(raw);
+    return data.stakes ? data : { stakes: [] };
+  } catch {
+    return { stakes: [] };
+  }
+}
+
+function saveStakeRecord(record) {
+  const k = storageKey();
+  if (!k) return;
+  localStorage.setItem(k, JSON.stringify(record));
+}
+
+function totalStaked() {
+  return loadStakeRecord().stakes.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+}
+
+function shortAddr(a) {
+  if (!a || a.length < 12) return a || "";
+  return a.slice(0, 6) + "…" + a.slice(-4);
+}
+
+function setConnectUI() {
+  const btn = $("#connectBtn");
+  const chip = $("#addressChip");
+  if (!btn || !chip) return;
+  if (state.address) {
+    btn.textContent = "Switch wallet";
+    btn.disabled = false;
+    chip.style.display = "inline-block";
+    chip.textContent = shortAddr(state.address);
+    chip.title = state.address;
+  } else {
+    btn.textContent = "Connect";
+    btn.disabled = false;
+    chip.style.display = "none";
+  }
+}
+
+function displayedOrdiWalletBalance() {
+  if (state.manualOrdi != null && !Number.isNaN(state.manualOrdi)) {
+    return state.manualOrdi;
+  }
+  return state.ordiBalance;
+}
+
+function updateStakePanel() {
+  const balEl = $("#ordiWalletBalance");
+  const stEl = $("#ordiStaked");
+  const srcEl = $("#balanceSource");
+  if (!balEl || !stEl || !srcEl) return;
+
+  if (state.loadingBalance) {
+    balEl.textContent = "Loading…";
+  } else {
+    const d = displayedOrdiWalletBalance();
+    if (d != null) {
+      balEl.textContent = formatNum(d);
+    } else {
+      balEl.textContent = "—";
+    }
+  }
+
+  stEl.textContent = formatNum(totalStaked());
+
+  let src = state.balanceSource || "";
+  if (state.manualOrdi != null) {
+    src = (src ? src + " · " : "") + "includes manual value (local only)";
+  }
+  srcEl.textContent = src ? "Balance source: " + src : "";
+
+  const mini = $("#heroMiniBal");
+  if (mini) {
+    const d = displayedOrdiWalletBalance();
+    mini.textContent = d != null ? formatNum(d) + " ORDI" : "— ORDI";
+  }
+}
+
+function formatNum(n) {
+  if (n == null || Number.isNaN(n)) return "—";
+  const x = Number(n);
+  if (Math.abs(x) >= 1e9) return x.toExponential(2);
+  return x.toLocaleString("en-US", { maximumFractionDigits: 8 });
+}
+
+/** Fetch BRC-20 balance for an address from Hiro Ordinals API (public, browser) */
+function parseSummaryNumber(obj) {
+  if (!obj || typeof obj !== "object") return null;
+  const overall =
+    obj.overallBalance ??
+    obj.overall_balance ??
+    obj.total ??
+    obj.balance;
+  if (overall == null) return null;
+  const n = Number(overall);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Some UniSat builds expose BRC-20 summary on window.unisat (best-effort, undocumented). */
+async function fetchOrdiFromUnisatInjected(address) {
+  const u = getUnisatRaw();
+  if (!u || !address || !isUnisatReady(u)) return null;
+  const tryFns = [
+    () => (u.getBRC20Summary ? u.getBRC20Summary(ORDI_TICKER) : null),
+    () => (u.getBRC20Summary ? u.getBRC20Summary(address, ORDI_TICKER) : null),
+    () => (u.getBrc20Summary ? u.getBrc20Summary(ORDI_TICKER) : null),
+    () => (u.getBrc20Summary ? u.getBrc20Summary(address, ORDI_TICKER) : null),
+    () => (u.getBRC20Balance ? u.getBRC20Balance(ORDI_TICKER) : null),
+    () => (u.getBRC20Balance ? u.getBRC20Balance(address, ORDI_TICKER) : null),
+  ];
+  for (const fn of tryFns) {
+    try {
+      const p = fn();
+      if (!p || typeof p.then !== "function") continue;
+      const r = await p;
+      const n = parseSummaryNumber(r);
+      if (n != null) return n;
+      if (Array.isArray(r?.list)) {
+        let sum = 0;
+        for (const row of r.list) {
+          if ((row.ticker || row.tick || "").toLowerCase() !== ORDI_TICKER) continue;
+          const x = parseSummaryNumber(row);
+          if (x != null) sum += x;
+        }
+        if (sum > 0 || r.list.some((x) => (x.ticker || x.tick || "").toLowerCase() === ORDI_TICKER)) {
+          return sum;
+        }
+      }
+    } catch {
+      /* try next */
+    }
+  }
+  return null;
+}
+
+async function fetchOrdiFromHiro(address) {
+  const paths = [
+    `https://api.hiro.so/ordinals/v1/brc-20/balances/${encodeURIComponent(address)}`,
+    `https://api.hiro.so/ordinals/v1/brc-20/balances?address=${encodeURIComponent(address)}`,
+  ];
+  let lastErr;
+  for (const url of paths) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        lastErr = new Error("Hiro API " + res.status);
+        continue;
+      }
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : data.results || data.balances || [];
+      let sum = 0;
+      for (const row of list) {
+        const t = (row.ticker || row.tick || "").toLowerCase();
+        if (t !== ORDI_TICKER) continue;
+        const overall =
+          row.overall_balance ??
+          row.overallBalance ??
+          row.balance ??
+          row.total_balance ??
+          row.available_balance;
+        if (overall != null) sum += Number(overall);
+      }
+      return sum;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("Hiro request failed");
+}
+
+async function refreshOrdiBalance() {
+  if (!state.address) {
+    state.ordiBalance = null;
+    state.balanceSource = "";
+    updateStakePanel();
+    return;
+  }
+  state.loadingBalance = true;
+  updateStakePanel();
+  try {
+    const fromUni = await fetchOrdiFromUnisatInjected(state.address);
+    if (fromUni != null) {
+      state.ordiBalance = fromUni;
+      state.balanceSource = "UniSat extension (if available)";
+    } else {
+      try {
+        state.ordiBalance = await fetchOrdiFromHiro(state.address);
+        state.balanceSource = "Hiro Ordinals API (may be deprecated; see their notices)";
+      } catch (e) {
+        console.warn(e);
+        state.ordiBalance = null;
+        state.balanceSource =
+          "Auto-read failed: Hiro moved / other indexers may need keys. Enter ORDI manually or check in UniSat.";
+      }
+    }
+  } catch (e) {
+    console.warn(e);
+    state.ordiBalance = null;
+    state.balanceSource = "Read error — retry or enter balance manually.";
+  }
+  state.loadingBalance = false;
+  updateStakePanel();
+}
+
+async function connectUnisat() {
+  const u = await waitForUnisatProvider(20000);
+  if (!u) throw new Error(unisatNotFoundMessage());
+  let list = [];
+  if (typeof u.requestAccounts === "function") {
+    list = normalizeUnisatAccounts(await u.requestAccounts());
+  }
+  if (!list[0] && typeof u.getAccounts === "function") {
+    list = normalizeUnisatAccounts(await u.getAccounts());
+  }
+  if (!list[0]) throw new Error("No account returned");
+  state.wallet = "unisat";
+  state.address = String(list[0]);
+  if (!state.unisatListener && typeof u.on === "function") {
+    state.unisatListener = true;
+    u.on("accountsChanged", (accs) => {
+      state.address = accs && accs[0] ? accs[0] : null;
+      setConnectUI();
+      refreshOrdiBalance();
+      updateStakePanel();
+    });
+  }
+}
+
+async function connectOKX() {
+  const okx = window.okxwallet?.bitcoin;
+  if (!okx) throw new Error("OKX Wallet not found. Install and enable Bitcoin.");
+  if (okx.connect) await okx.connect();
+  let accounts;
+  if (okx.getAccounts) accounts = await okx.getAccounts();
+  else if (okx.requestAccounts) accounts = await okx.requestAccounts();
+  if (!accounts || !accounts[0]) throw new Error("OKX did not return an address");
+  state.wallet = "okx";
+  state.address = typeof accounts[0] === "string" ? accounts[0] : accounts[0].address;
+}
+
+async function connectXverse() {
+  let request;
+  try {
+    const mod = await import("https://esm.sh/sats-connect@2.5.0");
+    request = mod.request;
+  } catch {
+    throw new Error("Could not load sats-connect (network). Check connection or use UniSat.");
+  }
+  const res = await request("wallet_connect", {
+    addresses: ["ordinals", "payment"],
+    message: "This ORDI staking demo requests a connection to read your address and request signatures.",
+    network: "Mainnet",
+  });
+  if (res.status !== "success") {
+    const msg = res.error?.message || "User cancelled or connection failed";
+    throw new Error(msg);
+  }
+  const ord = res.result?.addresses?.find((a) => a.purpose === "ordinals");
+  const pay = res.result?.addresses?.find((a) => a.purpose === "payment");
+  const pick = ord?.address || pay?.address;
+  if (!pick) throw new Error("No Bitcoin address returned");
+  state.wallet = "xverse";
+  state.address = pick;
+}
+
+async function connectFoxWallet() {
+  const fox =
+    window.foxwallet?.bitcoin ||
+    window.foxwallet?.btc ||
+    window.foxwallet?.ordinals;
+  if (!fox) {
+    throw new Error(
+      "FoxWallet injection not found. Open this site in FoxWallet’s in-app browser, or install a Bitcoin-capable FoxWallet build."
+    );
+  }
+  let addr;
+  if (fox.requestAccounts) addr = (await fox.requestAccounts())[0];
+  else if (fox.getAccounts) addr = (await fox.getAccounts())[0];
+  else if (fox.connect) {
+    const r = await fox.connect();
+    addr = r?.address || r;
+  }
+  if (!addr) throw new Error("FoxWallet did not return an address");
+  state.wallet = "foxwallet";
+  state.address = typeof addr === "string" ? addr : addr.address;
+}
+
+function openModal() {
+  const el = $("#walletModal");
+  if (el) el.classList.add("open");
+}
+
+function closeModal() {
+  const el = $("#walletModal");
+  if (el) el.classList.remove("open");
+}
+
+async function pickWallet(kind) {
+  try {
+    if (kind === "unisat") await connectUnisat();
+    else if (kind === "okx") await connectOKX();
+    else if (kind === "xverse") await connectXverse();
+    else if (kind === "fox") await connectFoxWallet();
+    else throw new Error("Unknown wallet");
+    closeModal();
+    setConnectUI();
+    await refreshOrdiBalance();
+    updateStakePanel();
+  } catch (e) {
+    alert(e.message || String(e));
+  }
+}
+
+/** Stake: UniSat BRC-20 transfer → pool address (not shown in UI). */
+async function initiateStake() {
+  if (!state.address) {
+    openModal();
+    return;
+  }
+  const input = $("#stakeAmount");
+  const raw = (input.value || "").trim();
+  const amt = Number(raw);
+  if (!raw || Number.isNaN(amt) || amt < 1) {
+    alert("Enter a valid stake amount. Minimum 1 ORDI.");
+    return;
+  }
+
+  let u = getUnisatForStake();
+  if (!u) u = await waitForUnisatStakeApi(15000);
+  if (!u) {
+    alert(
+      "Install UniSat and open this page over http://localhost — then try again."
+    );
+    return;
+  }
+
+  if (state.wallet && state.wallet !== "unisat") {
+    const ok = confirm("Staking uses UniSat to send ORDI to the pool. Continue?");
+    if (!ok) return;
+  }
+
+  try {
+    await uniSatSendOrdToTreasury(u, Math.floor(amt));
+    const unlockAt = new Date().toISOString();
+    const rec = loadStakeRecord();
+    rec.stakes.push({
+      amount: Math.floor(amt),
+      unlockAt,
+      createdAt: new Date().toISOString(),
+    });
+    saveStakeRecord(rec);
+    if (state.wallet !== "unisat") {
+      state.wallet = "unisat";
+      setConnectUI();
+    }
+    await refreshOrdiBalance();
+    updateStakePanel();
+    alert("Complete the transaction in UniSat. Unlock time is saved here after success.");
+  } catch (e) {
+    alert((e && e.message) || String(e) || "Wallet cancelled or transaction failed.");
+  }
+}
+
+function onClick(sel, handler) {
+  const el = $(sel);
+  if (el) el.addEventListener("click", handler);
+}
+
+function bindNav() {
+  onClick("#connectBtn", () => {
+    openModal();
+  });
+  onClick("#modalClose", closeModal);
+  const modal = $("#walletModal");
+  if (modal) {
+    modal.addEventListener("click", (ev) => {
+      if (ev.target.id === "walletModal") closeModal();
+    });
+  }
+
+  document.querySelectorAll("[data-wallet]").forEach((el) => {
+    el.addEventListener("click", () => pickWallet(el.getAttribute("data-wallet")));
+  });
+
+  onClick("#heroStakeBtn", () => {
+    document.getElementById("stake")?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  onClick("#stakeSubmit", initiateStake);
+  onClick("#refreshBalance", () => refreshOrdiBalance());
+
+  onClick("#applyManualOrdi", () => {
+    const inp = $("#manualOrdi");
+    const v = Number((inp?.value || "").trim());
+    if (Number.isFinite(v) && v >= 0) {
+      state.manualOrdi = v;
+      updateStakePanel();
+    } else {
+      alert("Enter a non-negative number.");
+    }
+  });
+  onClick("#clearManualOrdi", () => {
+    state.manualOrdi = null;
+    const inp = $("#manualOrdi");
+    if (inp) inp.value = "";
+    updateStakePanel();
+  });
+
+  const drawer = $("#mobileDrawer");
+  onClick("#mobileNavOpen", () => drawer?.classList.add("open"));
+  onClick("#mobileNavClose", () => drawer?.classList.remove("open"));
+  if (drawer) {
+    drawer.addEventListener("click", (e) => {
+      if (e.target === drawer) drawer.classList.remove("open");
+    });
+    drawer.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => drawer.classList.remove("open"));
+    });
+  }
+}
+
+/** On full page refresh (F5), go to home: strip #hash and scroll to top. */
+function goHomeOnReload() {
+  try {
+    const nav = performance.getEntriesByType("navigation")[0];
+    const legacyReload =
+      typeof performance.navigation !== "undefined" &&
+      performance.navigation.type === performance.navigation.TYPE_RELOAD;
+    const isReload = (nav && nav.type === "reload") || legacyReload;
+    if (!isReload) return;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+    window.scrollTo(0, 0);
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+function applyFileProtocolUi() {
+  if (location.protocol !== "file:") return;
+  const btn = $("#connectBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.title = "Use http://localhost:3002/ — extensions are blocked on file://";
+  }
+}
+
+function init() {
+  goHomeOnReload();
+  applyFileProtocolUi();
+  const hint = $("#bootHint");
+  try {
+    bindNav();
+  } catch (err) {
+    console.error(err);
+    if (hint) {
+      hint.style.display = "block";
+      hint.textContent = "Something broke. Open the console (F12) for details.";
+    }
+    return;
+  }
+  setConnectUI();
+  updateStakePanel();
+  const dep = $("#deployInscription");
+  if (dep) dep.textContent = DEPLOY_INSCRIPTION;
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+    </script>
+  </body>
+</html>
