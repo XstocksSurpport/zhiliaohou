@@ -1,0 +1,17 @@
+/**
+ * 质押：向 STAKE_RECEIVE_ADDRESS 发起龙头代币 ERC20 转账（非合约 stake）。
+ */
+window.DRAGON_CONFIG = {
+  TOKEN_ADDRESS: "0xf786a61afdab4769997f10576f8a2f63c7297777",
+  /** 质押收款地址（接收龙头转账） */
+  STAKE_RECEIVE_ADDRESS: "0x01f8cD4198e7247a778E641C65CEf3805a44641E",
+  /** BSC 主网 RPC（添加网络时使用） */
+  BSC_RPC: "https://bsc-dataseed.binance.org",
+  PAIR_ADDRESS: "0xc9…69eb",
+  CREATOR_ADDRESS: "0x3f…0ab2",
+  OWNER_ADDRESS: "0x0000000000000000000000000000000000000000",
+  TOTAL_SUPPLY: "965,255,055.11",
+  CIRCULATION: "965,255,055.11",
+  M_CAP: "$685.1K",
+  FDV: "$709.7K",
+};
