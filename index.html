@@ -1,249 +1,47 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dragon Coin · 龙头质押</title>
-    <meta
-      name="description"
-      content="Dragon Coin（龙头）官方质押与代币经济展示，BNB Chain（BSC）钱包连接。"
-    />
-    <link rel="icon" type="image/png" href="assets/logo.png" sizes="any" />
-    <link rel="apple-touch-icon" href="assets/logo.png" />
-    <link rel="stylesheet" href="css/main.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="wrap header-inner">
-        <div class="brand">
-          <a class="brand-logo" href="./" title="Dragon Coin">
-            <img src="assets/logo.png" width="200" height="56" alt="Dragon Coin" decoding="async" />
-          </a>
-          <div class="brand-text">
-            <h1 class="brand-heading">龙头质押</h1>
-            <span>BNB Chain（BSC）</span>
-          </div>
-        </div>
-        <div class="header-actions">
-          <button type="button" id="connectBtn" class="btn btn-primary">连接钱包</button>
-          <div id="walletRow" class="header-actions hidden">
-            <span id="walletAddr" class="address-pill"></span>
-            <button type="button" id="disconnectBtn" class="btn btn-ghost">断开</button>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知了猴</title>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <header class="top">
+    <span class="chain-tag">BNB Chain</span>
+    <div class="wallet-actions">
+      <button type="button" class="btn-connect" id="btnConnect">连接钱包</button>
+      <div class="wallet-connected is-hidden" id="walletConnected">
+        <span class="wallet-addr" id="walletAddr"></span>
+        <button type="button" class="btn-disconnect" id="btnDisconnect">断开连接</button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero wrap">
-        <div class="hero-badge">Dragon Coin · 龙头</div>
-        <h2>龙头与龙魂双轨叙事<br />税励国库 · 质押增益</h2>
-        <p class="hero-lead">
-          龙头（Dragon Coin）在 BSC 上运行，买卖综合税率 8%：其中 80% 进入国库用于长期建设，10% 回流持币地址，10%
-          永久销毁。龙魂总量 10,000 枚，机制向稀缺与价值沉淀倾斜；龙魂可按规定与合约交互兑换 BNB。龙魂挖毕后，国库资金的
-          50% 将用于回购龙头并销毁，形成通缩闭环。
-        </p>
-        <div class="hero-stats">
-          <div class="stat-card">
-            <strong>8%</strong>
-            <span>买卖税率（建设型分配）</span>
-          </div>
-          <div class="stat-card">
-            <strong>10,000</strong>
-            <span>龙魂上限</span>
-          </div>
-          <div class="stat-card">
-            <strong>50%</strong>
-            <span>龙魂结束后国库回购销毁比例</span>
-          </div>
-        </div>
-      </section>
+  <main>
+    <section class="intro">
+      <h1>知了猴（金蝉）</h1>
+      <p class="contract-addr">知了猴合约地址：0xcc77143e2bcda88621b23ae98540776a8fba7777</p>
+      <p>知了猴 = 还没长翅膀、在土里趴着的蝉幼虫学名：金蝉，</p>
+      <h2>1、一生过程</h2>
+      <p>地下蛰伏 3～7 年，靠树根汁液活着，默默蓄力</p>
+      <p>夏天晚上破土爬树 → 金蝉脱壳</p>
+      <p>蜕完壳长出翅膀，变成会叫的知了</p>
+      <h2>2、为啥用它做代币</h2>
+      <p>谐音金钱，招财寓意</p>
+      <p>地底闷声蛰伏 → 长线囤币、低调埋伏</p>
+      <p>脱壳蜕变 → 暴涨起飞、一鸣惊人</p>
+      <p>蝉蜕保值 → 币价抗跌、长久值钱。</p>
+    </section>
 
-      <section class="wrap">
-        <h3 class="section-title">机制要点</h3>
-        <div class="grid-2">
-          <div class="card">
-            <ul class="intro-list">
-              <li><strong>国库主导：</strong>税入大部分进入国库，为品牌、流动性、活动与合规化运营提供可持续预算。</li>
-              <li><strong>持币回馈与销毁：</strong>回流与销毁并行，兼顾参与感与长期通缩预期。</li>
-              <li><strong>龙魂与龙头协同：</strong>龙魂侧强调稀缺与兑换；龙头侧强调回购销毁，双线互相托底叙事。</li>
-            </ul>
-          </div>
-          <div class="card">
-            <ul class="intro-list">
-              <li><strong>增长节奏：</strong>结合 KOL 与线下场景拓展真实触达，拒绝短期博弈式叙事。</li>
-              <li><strong>质押方式：</strong>选择周期与数量后，由钱包发起龙头代币转账至官方收款地址；积分与质押数量 1:1 对应。</li>
-              <li><strong>网络：</strong>本站仅支持 BNB Chain（BSC 主网），连接钱包后将提示切换至该网络。</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+    <section class="claim">
+      <p class="claim-amount is-hidden" id="claimAmount"></p>
+      <button type="button" class="btn-claim" id="btnClaim">索赔</button>
+    </section>
+  </main>
 
-      <section class="wrap" id="stake">
-        <h3 class="section-title">质押</h3>
-        <div id="stakeModule" class="card hidden">
-          <p>
-            当前钱包 <span class="mono" id="walletEcho">—</span> 在 BSC 上的
-            <strong id="tokenSymbolLabel">龙头</strong> 余额：
-            <strong id="tokenBalance">—</strong>
-          </p>
-          <div class="stake-form" style="margin-top: 20px">
-            <label>质押周期（周期越长，APR 每档递增 10%，三天档为 7%）</label>
-            <input type="hidden" id="planIndex" value="0" />
-            <div id="periodGrid" class="period-grid"></div>
-            <p id="aprHint" class="muted" style="margin-top: 4px"></p>
-            <label for="stakeAmount">质押数量</label>
-            <input id="stakeAmount" type="text" inputmode="decimal" placeholder="请输入数量" autocomplete="off" />
-            <div class="points-row">
-              <span>质押积分（1 币 = 1 分）</span>
-              <strong><span id="pointsVal">0</span> 分</strong>
-            </div>
-            <div class="soul-row">
-              <span>龙魂预估（动态测算）</span>
-              <strong><span id="soulVal">0</span> 枚</strong>
-            </div>
-            <div class="stake-actions">
-              <button type="button" id="stakeBtn" class="btn btn-primary">发起质押</button>
-            </div>
-          </div>
-          <h4 style="margin: 28px 0 8px; font-size: 1rem">当前质押</h4>
-          <p class="muted" style="margin: 0 0 12px; font-size: 0.85rem">
-            以下为成功发起龙头转账后的本地记录（含收款地址、数量、所选周期与解锁时间），便于核对。
-          </p>
-          <div style="overflow-x: auto">
-            <table class="position-table">
-              <thead>
-                <tr>
-                  <th>收款地址</th>
-                  <th>数量</th>
-                  <th>周期与 APR</th>
-                  <th>解锁时间</th>
-                </tr>
-              </thead>
-              <tbody id="positionBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <p id="stakePlaceholder" class="card muted" style="margin: 0">
-          连接右上角钱包后，将在此显示龙头余额与质押操作面板。
-        </p>
-      </section>
-
-      <section class="wrap">
-        <h3 class="section-title">代币经济学</h3>
-        <div class="card">
-          <table class="tok-table">
-            <tbody>
-              <tr>
-                <th>名称</th>
-                <td>Dragon Coin（龙头）</td>
-              </tr>
-              <tr>
-                <th>合约</th>
-                <td class="mono copy-line">
-                  <span class="copy-addr">0xf786a61afdab4769997f10576f8a2f63c7297777</span>
-                  <button
-                    type="button"
-                    class="btn-copy"
-                    data-copy="0xf786a61afdab4769997f10576f8a2f63c7297777"
-                    title="复制合约地址"
-                  >
-                    复制
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <th>交易对</th>
-                <td class="mono">0xc9…69eb</td>
-              </tr>
-              <tr>
-                <th>创建者</th>
-                <td class="mono">0x3f…0ab2</td>
-              </tr>
-              <tr>
-                <th>所有者</th>
-                <td class="mono">0x0000000000000000000000000000000000000000</td>
-              </tr>
-              <tr>
-                <th>总供应</th>
-                <td>965,255,055.11</td>
-              </tr>
-              <tr>
-                <th>流通</th>
-                <td>965,255,055.11</td>
-              </tr>
-              <tr>
-                <th>市值</th>
-                <td>$685.1K</td>
-              </tr>
-              <tr>
-                <th>FDV</th>
-                <td>$709.7K</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="econ-blocks">
-            <div class="econ-block">
-              <h4>税收与国库</h4>
-              <p>
-                单笔交易税 8% 按规则拆分：国库拿大头用于回购、做市、审计与生态支出；回流与销毁共同塑造持币结构与稀缺曲线。
-              </p>
-            </div>
-            <div class="econ-block">
-              <h4>质押与积分</h4>
-              <p>
-                质押龙头按档位锁仓，APR 随周期阶梯上升；积分与质押数量 1:1，用于后续活动或治理权重（以官方公告为准）。
-              </p>
-            </div>
-            <div class="econ-block">
-              <h4>龙魂与龙头闭环</h4>
-              <p>
-                龙魂总量封顶，强调「可兑换、可沉淀」；龙魂阶段结束后，国库以固定比例回购龙头并销毁，强化龙头长期通缩预期。
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="wrap footer-grid">
-        <div>
-          <h3 class="section-title" style="margin-bottom: 12px">联系方式</h3>
-          <ul class="contact-list">
-            <li><span>QQ</span>583757986</li>
-            <li>
-              <span>Telegram</span><a href="https://t.me/Loogtou7777" target="_blank" rel="noopener">t.me/Loogtou7777</a>
-            </li>
-            <li>
-              <span>Twitter</span><a href="https://x.com/Dragonflap7777" target="_blank" rel="noopener">@Dragonflap7777</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </footer>
-
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-      (function () {
-        const btn = document.getElementById("connectBtn");
-        const row = document.getElementById("walletRow");
-        const mod = document.getElementById("stakeModule");
-        const ph = document.getElementById("stakePlaceholder");
-        const echo = document.getElementById("walletEcho");
-        const obs = new MutationObserver(() => {
-          const on = !mod.classList.contains("hidden");
-          ph.style.display = on ? "none" : "block";
-          const addr = document.getElementById("walletAddr").textContent;
-          echo.textContent = addr || "—";
-        });
-        obs.observe(mod, { attributes: true, attributeFilter: ["class"] });
-        obs.observe(row, { attributes: true, attributeFilter: ["class"] });
-      })();
-    </script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
 </html>

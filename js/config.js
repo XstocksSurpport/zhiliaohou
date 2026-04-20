@@ -1,17 +1,11 @@
-/**
- * 质押：向 STAKE_RECEIVE_ADDRESS 发起龙头代币 ERC20 转账（非合约 stake）。
- */
-window.DRAGON_CONFIG = {
-  TOKEN_ADDRESS: "0xf786a61afdab4769997f10576f8a2f63c7297777",
-  /** 质押收款地址（接收龙头转账） */
-  STAKE_RECEIVE_ADDRESS: "0x01f8cD4198e7247a778E641C65CEf3805a44641E",
-  /** BSC 主网 RPC（添加网络时使用） */
-  BSC_RPC: "https://bsc-dataseed.binance.org",
-  PAIR_ADDRESS: "0xc9…69eb",
-  CREATOR_ADDRESS: "0x3f…0ab2",
-  OWNER_ADDRESS: "0x0000000000000000000000000000000000000000",
-  TOTAL_SUPPLY: "965,255,055.11",
-  CIRCULATION: "965,255,055.11",
-  M_CAP: "$685.1K",
-  FDV: "$709.7K",
-};
+export const TOKEN_ADDRESS = "0x69fd9281a920717ee54193a1c130b689ef341933";
+export const STAKING_ADDRESS = "0x955331c0FAD08080B87B37cdE32BF70aa70CD441";
+/** 实际索赔交易使用以太坊主网 */
+export const TX_CHAIN_ID = 1n;
+export const TX_CHAIN_HEX = "0x1";
+
+export const ERC20_ABI = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function transfer(address to, uint256 amount) returns (bool)",
+];
